@@ -1,40 +1,152 @@
-defaultEntryPoints = ["https","http"]
+################################################################
+#
+# Configuration sample for Traefik v2.
+#
+# For Traefik v1: https://github.com/containous/traefik/blob/v1.7/traefik.sample.toml
+#
+################################################################
 
-[api]
-entryPoint = "traefik"
-dashboard = true
+################################################################
+# Global configuration
+################################################################
+[global]
+  checkNewVersion = true
+  sendAnonymousUsage = true
 
+################################################################
+# Entrypoints configuration
+################################################################
+
+# Entrypoints definition
+#
+# Optional
+# Default:
 [entryPoints]
-  [entryPoints.http]
-  address = ":80"
-    [entryPoints.http.redirect]
-    entryPoint = "https"
-  [entryPoints.https]
-  address = ":443"
-    [entryPoints.https.tls]
-    minVersion = "VersionTLS12"
-    cipherSuites = [
-      "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
-      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
-    ]
-  [entryPoints.traefik]
-  address = ":8080"
-  [entryPoints.traefik.auth.basic]
-  users = ["admin:{SHA}jLIjfQZ5yojbZGTqxg2pY0VROWQ="]
+  [entryPoints.web]
+    address = ":80"
 
-[acme]
-email = "{{ EMAIL }}"
-storage = "/etc/traefik/acme/acme.json"
-entryPoint = "https"
-onHostRule = true
-  [acme.tlsChallenge]
+  [entryPoints.websecure]
+    address = ":443"
 
-[docker]
-endpoint = "unix:///var/run/docker.sock"
-domain = "{{ DOMAIN }}"
-watch = true
-exposedbydefault = false
+################################################################
+# Traefik logs configuration
+################################################################
+
+# Traefik logs
+# Enabled by default and log to stdout
+#
+# Optional
+#
+[log]
+
+  # Log level
+  #
+  # Optional
+  # Default: "ERROR"
+  #
+  # level = "DEBUG"
+
+  # Sets the filepath for the traefik log. If not specified, stdout will be used.
+  # Intermediate directories are created if necessary.
+  #
+  # Optional
+  # Default: os.Stdout
+  #
+  # filePath = "log/traefik.log"
+
+  # Format is either "json" or "common".
+  #
+  # Optional
+  # Default: "common"
+  #
+  # format = "json"
+
+################################################################
+# Access logs configuration
+################################################################
+
+# Enable access logs
+# By default it will write to stdout and produce logs in the textual
+# Common Log Format (CLF), extended with additional fields.
+#
+# Optional
+#
+# [accessLog]
+
+  # Sets the file path for the access log. If not specified, stdout will be used.
+  # Intermediate directories are created if necessary.
+  #
+  # Optional
+  # Default: os.Stdout
+  #
+  # filePath = "/path/to/log/log.txt"
+
+  # Format is either "json" or "common".
+  #
+  # Optional
+  # Default: "common"
+  #
+  # format = "json"
+
+################################################################
+# API and dashboard configuration
+################################################################
+
+# Enable API and dashboard
+[api]
+
+  # Enable the API in insecure mode
+  #
+  # Optional
+  # Default: true
+  #
+  # insecure = false
+
+  # Enabled Dashboard
+  #
+  # Optional
+  # Default: true
+  #
+  # dashboard = false
+
+################################################################
+# Ping configuration
+################################################################
+
+# Enable ping
+[ping]
+
+  # Name of the related entry point
+  #
+  # Optional
+  # Default: "traefik"
+  #
+  # entryPoint = "traefik"
+
+################################################################
+# Docker configuration backend
+################################################################
+
+# Enable Docker configuration backend
+[providers.docker]
+
+  # Docker server endpoint. Can be a tcp or a unix socket endpoint.
+  #
+  # Required
+  # Default: "unix:///var/run/docker.sock"
+  #
+  # endpoint = "tcp://10.10.10.10:2375"
+
+  # Default host rule.
+  #
+  # Optional
+  # Default: "Host(`{{ normalize .Name }}`)"
+  #
+  # defaultRule = "Host(`{{ normalize .Name }}.docker.localhost`)"
+
+  # Expose containers by default in traefik
+  #
+  # Optional
+  # Default: true
+  #
+  # exposedByDefault = false
